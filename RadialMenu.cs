@@ -221,9 +221,10 @@ namespace ImComponents
                     ctx.IdxHovered = -1;
                 }
                 int arc_segemnts = (int)(32 * item_arc_span / (2 * IM_PI)) + 1;
+                uint color = ImGui.GetColorU32(ctx.IdxHovered == item ? (ctx.Items[ctx.IdxHovered].IsSubMenu ? ImGuiCol.ButtonHovered : ImGuiCol.ButtonActive) : ImGuiCol.Button);
                 list.PathArcTo(ctx.center, ctx.RADIUS_MAX - style.ItemInnerSpacing.X, item_ang_min, item_ang_max, arc_segemnts);
                 list.PathArcTo(ctx.center, ctx.RADIUS_MIN + style.ItemInnerSpacing.X, item_ang_max, item_ang_min, arc_segemnts);
-                list.PathFillConvex(ctx.IdxHovered == item ? ImGui.GetColorU32(ctx.Items[ctx.IdxHovered].IsSubMenu ? ImGuiCol.ButtonHovered : ImGuiCol.ButtonActive) : ImGui.GetColorU32(ImGuiCol.Button));
+                list.PathFillConvex(color);
                 float RadCenter = (item_arc_span * item) + ctx.Rotation;
                 if (ctx.Items[item].IsSubMenu)
                 {
