@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace ImGuiComponents
+namespace ImComponents
 {
     public static class Keyboard
     {

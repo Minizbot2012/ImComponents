@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using ImGuiNET;
 
-namespace ImGuiComponents
+namespace ImComponents
 {
     public static class AdvRadialMenu
     {

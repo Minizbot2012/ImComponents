@@ -1,7 +1,7 @@
 using System.Numerics;
 using ImGuiNET;
 
-namespace ImGuiComponents
+namespace ImComponents
 {
     public static class ToggleComponents
     {
