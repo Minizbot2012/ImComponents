@@ -192,8 +192,6 @@ namespace ImComponents
             var style = ImGui.GetStyle();
             ImDrawListPtr list = ImGui.GetWindowDrawList();
             list.PushClipRectFullScreen();
-            list.PathArcTo(ctx.center, (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f, 0.0f, 2.0f * 0.99f * IM_PI, 32);
-            list.PathStroke(ImGui.GetColorU32(ImGuiCol.WindowBg), ImDrawFlags.Closed, (float)(ctx.RADIUS_MAX - ctx.RADIUS_MIN));
             float item_arc_span = 2.0f * IM_PI / Math.Max(ctx.Items.Count, MIN_ITEMS + MIN_ITEMS_PER_LEVEL * (ContextCount + 1));
             float drag_angle = (float)Math.Atan2(delta.Y, delta.X);
             if (ContextCount > 0)
