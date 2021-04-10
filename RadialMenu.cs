@@ -201,15 +201,17 @@ namespace ImComponents
                 string ilabel = ctx.Items[item].Title;
                 float MinItemSpacing = style.ItemInnerSpacing.X / (ctx.RADIUS_MIN * 2.0f);
                 float MaxItemSpacing = style.ItemInnerSpacing.X / (ctx.RADIUS_MAX * 2.0f);
-                float item_ang_min = item_arc_span * (item - 0.5f + MinItemSpacing) + ctx.Rotation;
-                float item_ang_max = item_arc_span * (item + 0.5f - MaxItemSpacing) + ctx.Rotation;
+                float item_inner_ang_min = item_arc_span * (item - 0.5f + MinItemSpacing) + ctx.Rotation;
+                float item_inner_ang_max = item_arc_span * (item + 0.5f - MaxItemSpacing) + ctx.Rotation;
+                float item_outer_ang_min = item_arc_span * (item - 0.5f + MinItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
+                float item_outer_ang_max = item_arc_span * (item + 0.5f - MaxItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
                 if (drag_dist >= ctx.RADIUS_MIN && drag_dist <= ctx.RADIUS_MAX)
                 {
-                    while ((drag_angle - item_ang_min) < 0f)
+                    while ((drag_angle - item_inner_ang_min) < 0f)
                         drag_angle += 2f * IM_PI;
-                    while ((drag_angle - item_ang_min) > 2 * IM_PI)
+                    while ((drag_angle - item_inner_ang_min) > 2 * IM_PI)
                         drag_angle -= 2f * IM_PI;
-                    if (drag_angle >= item_ang_min && drag_angle < item_ang_max)
+                    if (drag_angle >= item_inner_ang_min && drag_angle < item_inner_ang_max)
                     {
                         ctx.IdxHovered = item;
                     }
@@ -220,8 +222,8 @@ namespace ImComponents
                 }
                 int arc_segemnts = (int)(32 * item_arc_span / (2 * IM_PI)) + 1;
                 uint color = ImGui.GetColorU32(ctx.IdxHovered == item ? (ctx.Items[ctx.IdxHovered].IsSubMenu ? ImGuiCol.ButtonHovered : ImGuiCol.ButtonActive) : ImGuiCol.Button);
-                list.PathArcTo(ctx.center, ctx.RADIUS_MAX - style.ItemInnerSpacing.X, item_ang_min, item_ang_max, arc_segemnts);
-                list.PathArcTo(ctx.center, ctx.RADIUS_MIN + style.ItemInnerSpacing.X, item_ang_max, item_ang_min, arc_segemnts);
+                list.PathArcTo(ctx.center, ctx.RADIUS_MAX - style.ItemInnerSpacing.X, item_outer_ang_min, item_outer_ang_max, arc_segemnts);
+                list.PathArcTo(ctx.center, ctx.RADIUS_MIN + style.ItemInnerSpacing.X, item_inner_ang_max, item_inner_ang_min, arc_segemnts);
                 list.PathFillConvex(color);
                 float RadCenter = (item_arc_span * item) + ctx.Rotation;
                 if (ctx.Items[item].IsSubMenu)
@@ -245,8 +247,8 @@ namespace ImComponents
                 }
                 Vector2 text_size = ImGui.CalcTextSize(ilabel, 0.0f);
                 Vector2 text_pos = new(
-                    ctx.center.X + (float)Math.Cos((item_ang_min + item_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.X * 0.5f,
-                    ctx.center.Y + (float)Math.Sin((item_ang_min + item_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.Y * 0.5f);
+                    ctx.center.X + (float)Math.Cos((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.X * 0.5f,
+                    ctx.center.Y + (float)Math.Sin((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.Y * 0.5f);
                 list.AddText(text_pos, ImGui.GetColorU32(ImGuiCol.Text), ilabel);
             }
             if (!ctx.Open && ContextCount == 0)
