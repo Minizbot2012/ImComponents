@@ -199,12 +199,11 @@ namespace ImComponents
             for (int item = 0; item < ctx.Items.Count; item++)
             {
                 string ilabel = ctx.Items[item].Title;
-                float MinItemSpacing = style.ItemInnerSpacing.X / (ctx.RADIUS_MIN * 2.0f);
-                float MaxItemSpacing = style.ItemInnerSpacing.X / (ctx.RADIUS_MAX * 2.0f);
-                float item_inner_ang_min = item_arc_span * (item - 0.5f + MinItemSpacing) + ctx.Rotation;
-                float item_inner_ang_max = item_arc_span * (item + 0.5f - MaxItemSpacing) + ctx.Rotation;
-                float item_outer_ang_min = item_arc_span * (item - 0.5f + MinItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
-                float item_outer_ang_max = item_arc_span * (item + 0.5f - MaxItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
+                float ItemSpacing = style.ItemInnerSpacing.X / (ctx.RADIUS_MIN * 2.0f);
+                float item_inner_ang_min = item_arc_span * (item - 0.5f + ItemSpacing) + ctx.Rotation;
+                float item_inner_ang_max = item_arc_span * (item + 0.5f - ItemSpacing) + ctx.Rotation;
+                float item_outer_ang_min = item_arc_span * (item - 0.5f + ItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
+                float item_outer_ang_max = item_arc_span * (item + 0.5f - ItemSpacing * (ctx.RADIUS_MIN / ctx.RADIUS_MAX)) + ctx.Rotation;
                 if (drag_dist >= ctx.RADIUS_MIN && drag_dist <= ctx.RADIUS_MAX)
                 {
                     while ((drag_angle - item_inner_ang_min) < 0f)
