@@ -196,6 +196,8 @@ namespace ImComponents
             float drag_angle = (float)Math.Atan2(delta.Y, delta.X);
             if (ContextCount > 0)
                 ctx.Rotation -= item_arc_span * (ctx.Items.Count - 1f) / 2f;
+            else
+                ctx.Rotation = item_arc_span * (ctx.Items.Count - 1f);
             for (int item = 0; item < ctx.Items.Count; item++)
             {
                 string ilabel = ctx.Items[item].Title;
