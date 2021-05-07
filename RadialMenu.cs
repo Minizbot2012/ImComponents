@@ -62,7 +62,7 @@ namespace ImComponents
             {
                 Idx = Hovered.Pop();
             }
-            float Rotation = IM_PI * 1.5f;
+            float Rotation = -IM_PI * 0.5f;
             if (RotationCount > 0)
             {
                 Rotation = Rotations.Pop();
