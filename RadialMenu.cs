@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using ImGuiNET;
 
 namespace ImComponents
@@ -63,7 +62,7 @@ namespace ImComponents
             {
                 Idx = Hovered.Pop();
             }
-            float Rotation = -IM_PI / 2f;
+            float Rotation = IM_PI * 1.5f;
             if (RotationCount > 0)
             {
                 Rotation = Rotations.Pop();
@@ -198,7 +197,7 @@ namespace ImComponents
             if (ContextCount > 0)
                 ctx.Rotation -= item_arc_span * (ctx.Items.Count - 1f) / 2f;
             else
-                ctx.Rotation = IM_PI - IM_PI / (item_arc_span * ctx.Items.Count);
+                ctx.Rotation -= item_arc_span * (ctx.Items.Count - 1f) / 2f;
             for (int item = 0; item < ctx.Items.Count; item++)
             {
                 string ilabel = ctx.Items[item].Title;
