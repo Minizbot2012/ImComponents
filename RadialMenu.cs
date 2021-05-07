@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using ImGuiNET;
 
 namespace ImComponents
@@ -8,6 +9,8 @@ namespace ImComponents
     public static class AdvRadialMenu
     {
         private static readonly float IM_PI = 3.14159265358979323846f;
+        private static readonly int MIN_ITEMS = 3;
+        private static readonly int MIN_ITEMS_PER_LEVEL = 3;
         private struct RadialMenuRootCtx
         {
             public Stack<RadialMenuContext> contexts;
@@ -45,8 +48,6 @@ namespace ImComponents
         private static int HoveredCount => Hovered.Count;
         private static int ContextCount => Contexts.Count;
         private static int RotationCount => Contexts.Count;
-        private static readonly int MIN_ITEMS = 3;
-        private static readonly int MIN_ITEMS_PER_LEVEL = 3;
         public static void DebugMenu()
         {
             ImGui.Begin("MZRadialDebugging");
@@ -197,7 +198,7 @@ namespace ImComponents
             if (ContextCount > 0)
                 ctx.Rotation -= item_arc_span * (ctx.Items.Count - 1f) / 2f;
             else
-                ctx.Rotation = item_arc_span * (ctx.Items.Count - 1f);
+                ctx.Rotation = IM_PI - IM_PI / (item_arc_span * ctx.Items.Count);
             for (int item = 0; item < ctx.Items.Count; item++)
             {
                 string ilabel = ctx.Items[item].Title;
