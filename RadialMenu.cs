@@ -5,14 +5,25 @@ using ImGuiNET;
 
 namespace ImComponents
 {
-    public static class AdvRadialMenu
+    public class AdvRadialMenu
     {
+        public AdvRadialMenu()
+        {
+            Root = new()
+            {
+                Contexts = new(),
+                Hovered = new(),
+                Rotations = new(),
+                last = 0
+            };
+        }
+        public static AdvRadialMenu _Default = new();
         private static readonly float IM_PI = 3.14159265358979323846f;
         private static readonly int MIN_ITEMS = 3;
         private static readonly int MIN_ITEMS_PER_LEVEL = 3;
         private struct RadialMenuRootCtx
         {
-            public Stack<RadialMenuContext> contexts;
+            public Stack<RadialMenuContext> Contexts;
             public Stack<int> Hovered;
             public Stack<float> Rotations;
             public int last;
@@ -34,20 +45,14 @@ namespace ImComponents
             public Vector2 center;
             public bool Open;
         }
-        private static RadialMenuRootCtx P = new()
-        {
-            contexts = new(),
-            Hovered = new(),
-            Rotations = new(),
-            last = 0
-        };
-        private static Stack<RadialMenuContext> Contexts => P.contexts;
-        public static Stack<int> Hovered => P.Hovered;
-        private static Stack<float> Rotations => P.Rotations;
-        private static int HoveredCount => Hovered.Count;
-        private static int ContextCount => Contexts.Count;
-        private static int RotationCount => Contexts.Count;
-        public static void DebugMenu()
+        private RadialMenuRootCtx Root;
+        private Stack<RadialMenuContext> Contexts => Root.Contexts;
+        public Stack<int> Hovered => Root.Hovered;
+        private Stack<float> Rotations => Root.Rotations;
+        private int HoveredCount => Hovered.Count;
+        private int ContextCount => Contexts.Count;
+        private int RotationCount => Contexts.Count;
+        public void DebugMenu()
         {
             ImGui.Begin("MZRadialDebugging");
             ImGui.Text("Context Count : " + ContextCount);
@@ -55,7 +60,14 @@ namespace ImComponents
             ImGui.Text("Rotation Count : " + RotationCount);
             ImGui.End();
         }
-        private static void PushRadialMenu(string name, Vector2 cent, bool open)
+        private void PushStyles()
+        {
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0, 0, 0, 0));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 1.0f);
+        }
+        private void PushRadialMenu(string name, Vector2 cent, bool open)
         {
             int Idx = -1;
             if (HoveredCount > 0)
@@ -79,13 +91,10 @@ namespace ImComponents
                 Open = open
             };
             Contexts.Push(ctx);
-            ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0, 0, 0, 0));
-            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0, 0, 0, 0));
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 1.0f);
+            PushStyles();
             ImGui.SetNextWindowBgAlpha(0f);
         }
-        public static bool BeginRadialPopup(string name, Vector2 center, bool open)
+        public bool BeginRadialPopup(string name, Vector2 center, bool open)
         {
             PushRadialMenu(name, center, open);
             var ctx = Contexts.Peek();
@@ -97,20 +106,21 @@ namespace ImComponents
             else
             {
                 Contexts.Pop();
+                PopStyles();
                 return false;
             }
         }
-        public static bool BeginRadialPopup(string name, bool open)
+        public bool BeginRadialPopup(string name, bool open)
         {
             if (open)
             {
-                if (ImGui.GetFrameCount() > P.last + 1)
+                if (ImGui.GetFrameCount() > Root.last + 1)
                 {
-                    P.Center = ImGui.GetIO().MousePos;
+                    Root.Center = ImGui.GetIO().MousePos;
                 }
-                P.last = ImGui.GetFrameCount();
+                Root.last = ImGui.GetFrameCount();
             }
-            PushRadialMenu(name, P.Center, open);
+            PushRadialMenu(name, Root.Center, open);
             var ctx = Contexts.Peek();
             var opened = ImGui.BeginPopup(ctx.Name);
             if (opened)
@@ -120,10 +130,11 @@ namespace ImComponents
             else
             {
                 Contexts.Pop();
+                PopStyles();
                 return false;
             }
         }
-        public static bool BeginRadialMenu(string name)
+        public bool BeginRadialMenu(string name)
         {
             if (Contexts.Count > 0)
             {
@@ -162,7 +173,7 @@ namespace ImComponents
             }
             return false;
         }
-        public static bool RadialMenuItem(string name)
+        public bool RadialMenuItem(string name)
         {
             var ctx = Contexts.Peek();
             RadialMenuElem elem = new()
@@ -180,11 +191,11 @@ namespace ImComponents
                 return false;
             }
         }
-        public static void RadialMenuItem(string name, Action<string> cb)
+        public void RadialMenuItem(string name, Action<string> cb)
         {
             if (RadialMenuItem(name)) cb(name);
         }
-        public static RadialMenuContext EndRadialMenu()
+        public RadialMenuContext EndRadialMenu()
         {
             var ctx = Contexts.Pop();
             var delta = new Vector2(ImGui.GetIO().MousePos.X - ctx.center.X, ImGui.GetIO().MousePos.Y - ctx.center.Y);
@@ -265,39 +276,46 @@ namespace ImComponents
                 }
             }
             list.PopClipRect();
+            if (ContextCount == 0)
+            {
+                PopStyles();
+                ImGui.EndPopup();
+            }
             return ctx;
         }
-        public static void EndRadialPopup()
+        private void PopStyles()
         {
             ImGui.PopStyleColor(2);
             ImGui.PopStyleVar(2);
-            ImGui.EndPopup();
         }
     }
     public static class RadialMenuHelpers
     {
         public static void SubMenu(string name, List<(string, Action<string>)> items)
         {
-            if (AdvRadialMenu.BeginRadialMenu(name))
+            if (AdvRadialMenu._Default.BeginRadialMenu(name))
             {
                 foreach (var item in items)
                 {
-                    AdvRadialMenu.RadialMenuItem(item.Item1, item.Item2);
+                    AdvRadialMenu._Default.RadialMenuItem(item.Item1, item.Item2);
                 }
-                AdvRadialMenu.EndRadialMenu();
+                AdvRadialMenu._Default.EndRadialMenu();
             }
         }
         public static void RadialMenu(string name, List<(string, Action<string>)> items, ref bool open)
         {
-            if (AdvRadialMenu.BeginRadialPopup(name, open))
+            if (open)
+            {
+                ImGui.OpenPopup(name);
+            }
+            if (AdvRadialMenu._Default.BeginRadialPopup(name, open))
             {
                 foreach (var item in items)
                 {
-                    AdvRadialMenu.RadialMenuItem(item.Item1, item.Item2);
+                    AdvRadialMenu._Default.RadialMenuItem(item.Item1, item.Item2);
                 }
-                AdvRadialMenu.EndRadialMenu();
+                AdvRadialMenu._Default.EndRadialMenu();
             }
-            AdvRadialMenu.EndRadialPopup();
         }
     }
 }
