@@ -17,7 +17,6 @@ namespace ImComponents
                 last = 0
             };
         }
-        public static AdvRadialMenu _Default = new();
         private static readonly float IM_PI = 3.14159265358979323846f;
         private static readonly int MIN_ITEMS = 3;
         private static readonly int MIN_ITEMS_PER_LEVEL = 3;
@@ -287,35 +286,6 @@ namespace ImComponents
         {
             ImGui.PopStyleColor(2);
             ImGui.PopStyleVar(2);
-        }
-    }
-    public static class RadialMenuHelpers
-    {
-        public static void SubMenu(string name, List<(string, Action<string>)> items)
-        {
-            if (AdvRadialMenu._Default.BeginRadialMenu(name))
-            {
-                foreach (var item in items)
-                {
-                    AdvRadialMenu._Default.RadialMenuItem(item.Item1, item.Item2);
-                }
-                AdvRadialMenu._Default.EndRadialMenu();
-            }
-        }
-        public static void RadialMenu(string name, List<(string, Action<string>)> items, ref bool open)
-        {
-            if (open)
-            {
-                ImGui.OpenPopup(name);
-            }
-            if (AdvRadialMenu._Default.BeginRadialPopup(name, open))
-            {
-                foreach (var item in items)
-                {
-                    AdvRadialMenu._Default.RadialMenuItem(item.Item1, item.Item2);
-                }
-                AdvRadialMenu._Default.EndRadialMenu();
-            }
         }
     }
 }
