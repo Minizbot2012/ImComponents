@@ -14,7 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ImGui.NET">
-      <HintPath Condition="Exists('$(HOME)\Games\SquareEnix\Data\XIVLauncher\addon\Hooks\dev\')">$(HOME)\Games\SquareEnix\Data\Documents\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
+      <HintPath Condition="Exists('$(HOME)\Games\SquareEnix\Data\XIVLauncher\addon\Hooks\dev\')">$(HOME)\Games\SquareEnix\Data\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
       <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\dev\')">$(AppData)\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
       <Private>false</Private>
     </Reference>
