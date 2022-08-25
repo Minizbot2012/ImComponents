@@ -10,12 +10,20 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <LibPath Condition="Exists('$(HOME)\.xlcore\dalamud\Hooks\dev')">$(HOME)\.xlcore\dalamud\Hooks\dev</LibPath>
+    <LibPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\dev')">$(AppData)\XIVLauncher\addon\Hooks\dev</LibPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="ImGui.NET">
-      <HintPath Condition="Exists('$(HOME)\.xlcore\dalamud\Hooks\dev')">$(HOME)\.xlcore\dalamud\Hooks\dev\ImGui.NET.dll</HintPath>
-      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\dev\')">$(AppData)\XIVLauncher\addon\Hooks\dev\ImGui.NET.dll</HintPath>
+      <HintPath>$(LibPath)\ImGui.NET.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
