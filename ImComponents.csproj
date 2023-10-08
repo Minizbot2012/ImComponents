@@ -1,10 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFramework>net7</TargetFramework>
     <LangVersion>latest</LangVersion>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <Platforms>x64</Platforms>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
