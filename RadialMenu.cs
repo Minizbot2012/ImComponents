@@ -5,8 +5,6 @@ namespace ImComponents;
 
 class AdvRadialMenu
 {
-    public AdvRadialMenu() {
-    }
     public static AdvRadialMenu Instance => Singleton<AdvRadialMenu>.Instance;
     private static readonly float IM_PI = 3.14159265358979323846f;
     private static readonly int MIN_ITEMS = 3;
