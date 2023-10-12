@@ -1,19 +1,13 @@
 using System.Numerics;
 using ImGuiNET;
 
-using MZCommon;
-
 namespace ImComponents;
 
-internal class AdvRadialMenu
+class AdvRadialMenu
 {
-    public static AdvRadialMenu Instance
-    {
-        get
-        {
-            return Singleton<AdvRadialMenu>.Instance;
-        }
+    public AdvRadialMenu() {
     }
+    public static AdvRadialMenu Instance => Singleton<AdvRadialMenu>.Instance;
     private static readonly float IM_PI = 3.14159265358979323846f;
     private static readonly int MIN_ITEMS = 3;
     private static readonly int MIN_ITEMS_PER_LEVEL = 3;
