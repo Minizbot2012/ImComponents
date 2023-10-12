@@ -6,13 +6,13 @@ public static class RadialMenuHelpers
 {
     public static void SubMenu(string name, List<(string, Action<string>)> items)
     {
-        if (AdvRadialMenu.Instance.BeginRadialMenu(name))
+        if (ImComponents.AdvRadialMenu.Instance.BeginRadialMenu(name))
         {
             foreach (var item in items)
             {
-                AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
+                ImComponents.AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
             }
-            AdvRadialMenu.Instance.EndRadialMenu();
+            ImComponents.AdvRadialMenu.Instance.EndRadialMenu();
         }
     }
     public static void RadialMenu(string name, List<(string, Action<string>)> items, ref bool open)
@@ -21,13 +21,13 @@ public static class RadialMenuHelpers
         {
             ImGui.OpenPopup(name);
         }
-        if (AdvRadialMenu.Instance.BeginRadialPopup(name, open))
+        if (ImComponents.AdvRadialMenu.Instance.BeginRadialPopup(name, open))
         {
             foreach (var item in items)
             {
-                AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
+                ImComponents.AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
             }
-            AdvRadialMenu.Instance.EndRadialMenu();
+            ImComponents.AdvRadialMenu.Instance.EndRadialMenu();
         }
     }
 }
