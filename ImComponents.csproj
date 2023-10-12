@@ -6,9 +6,14 @@
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <Platforms>x64</Platforms>
   </PropertyGroup>
-  
+
   <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

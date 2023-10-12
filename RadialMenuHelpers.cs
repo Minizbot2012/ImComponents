@@ -1,35 +1,33 @@
-using System.Collections.Generic;
-using System;
 using ImGuiNET;
 
 namespace ImComponents;
 
 public static class RadialMenuHelpers
 {
-    public static void SubMenu(AdvRadialMenu _impl, string name, List<(string, Action<string>)> items)
+    public static void SubMenu(string name, List<(string, Action<string>)> items)
     {
-        if (_impl.BeginRadialMenu(name))
+        if (AdvRadialMenu.Instance.BeginRadialMenu(name))
         {
             foreach (var item in items)
             {
-                _impl.RadialMenuItem(item.Item1, item.Item2);
+                AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
             }
-            _impl.EndRadialMenu();
+            AdvRadialMenu.Instance.EndRadialMenu();
         }
     }
-    public static void RadialMenu(AdvRadialMenu _impl, string name, List<(string, Action<string>)> items, ref bool open)
+    public static void RadialMenu(string name, List<(string, Action<string>)> items, ref bool open)
     {
         if (open)
         {
             ImGui.OpenPopup(name);
         }
-        if (_impl.BeginRadialPopup(name, open))
+        if (AdvRadialMenu.Instance.BeginRadialPopup(name, open))
         {
             foreach (var item in items)
             {
-                _impl.RadialMenuItem(item.Item1, item.Item2);
+                AdvRadialMenu.Instance.RadialMenuItem(item.Item1, item.Item2);
             }
-            _impl.EndRadialMenu();
+            AdvRadialMenu.Instance.EndRadialMenu();
         }
     }
 }
