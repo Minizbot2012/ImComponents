@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net7</TargetFramework>
+    <TargetFramework>net8</TargetFramework>
     <LangVersion>latest</LangVersion>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

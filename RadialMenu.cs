@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Numerics;
 using ImGuiNET;
 using MZCommon;
@@ -6,8 +8,8 @@ namespace ImComponents;
 
 public sealed class AdvRadialMenu
 {
-    private AdvRadialMenu() {
-        
+    private AdvRadialMenu()
+    {
     }
     public static AdvRadialMenu Instance => Singleton<AdvRadialMenu>.Instance;
     private static readonly float IM_PI = 3.14159265358979323846f;
@@ -89,7 +91,6 @@ public sealed class AdvRadialMenu
                 IsSubMenu = true,
                 Name = name,
             };
-            var Rotation = pctx.Rotation;
             State st = new()
             {
                 TS = ThisItem,
@@ -190,15 +191,21 @@ public sealed class AdvRadialMenu
                 float RadLeft = RadCenter - 5.0f / ctx.RADIUS_MAX;
                 float RadRight = RadCenter + 5.0f / ctx.RADIUS_MAX;
 
-                tri[0] = new();
-                tri[0].X = Root.Center.X + (float)Math.Cos(RadCenter) * (ctx.RADIUS_MAX - 5.0f);
-                tri[0].Y = Root.Center.Y + (float)Math.Sin(RadCenter) * (ctx.RADIUS_MAX - 5.0f);
-                tri[1] = new();
-                tri[1].X = Root.Center.X + (float)Math.Cos(RadLeft) * (ctx.RADIUS_MAX - 10.0f);
-                tri[1].Y = Root.Center.Y + (float)Math.Sin(RadLeft) * (ctx.RADIUS_MAX - 10.0f);
-                tri[2] = new();
-                tri[2].X = Root.Center.X + (float)Math.Cos(RadRight) * (ctx.RADIUS_MAX - 10.0f);
-                tri[2].Y = Root.Center.Y + (float)Math.Sin(RadRight) * (ctx.RADIUS_MAX - 10.0f);
+                tri[0] = new()
+                {
+                    X = Root.Center.X + (float)Math.Cos(RadCenter) * (ctx.RADIUS_MAX - 5.0f),
+                    Y = Root.Center.Y + (float)Math.Sin(RadCenter) * (ctx.RADIUS_MAX - 5.0f)
+                };
+                tri[1] = new()
+                {
+                    X = Root.Center.X + (float)Math.Cos(RadLeft) * (ctx.RADIUS_MAX - 10.0f),
+                    Y = Root.Center.Y + (float)Math.Sin(RadLeft) * (ctx.RADIUS_MAX - 10.0f)
+                };
+                tri[2] = new()
+                {
+                    X = Root.Center.X + (float)Math.Cos(RadRight) * (ctx.RADIUS_MAX - 10.0f),
+                    Y = Root.Center.Y + (float)Math.Sin(RadRight) * (ctx.RADIUS_MAX - 10.0f)
+                };
 
                 list.AddTriangleFilled(tri[0], tri[1], tri[2], ImGui.GetColorU32(new Vector4(1f)));
             }
