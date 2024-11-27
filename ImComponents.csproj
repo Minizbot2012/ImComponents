@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8</TargetFramework>
+    <TargetFramework>net9</TargetFramework>
     <LangVersion>latest</LangVersion>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <Platforms>x64</Platforms>
