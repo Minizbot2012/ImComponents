@@ -1,24 +1,29 @@
 using System;
+using System.Collections.Generic;
+using System.Numerics;
+using MZCommon;
 
 namespace ImComponents.Raii
 {
-
     //Eventually gonna re-wire everything to this class.... it'll be fun
-    public interface IMenu {
+    public interface IMenu
+    {
         SubMenu Menu(string name);
         bool RadialMenuItem(string name);
     }
-    public class RadialMenu(bool open) : IDisposable, IMenu
+    public class RadialMenu : IDisposable, IMenu
     {
-        public bool open = ImComponents.RadialMenu.Instance.BeginRadialPopup(open);
-
+        public bool open;
+        public RadialMenu(bool open)
+        {
+            this.open = ImComponents.RadialMenu.Instance.BeginRadialPopup(open);
+        }
         public void Dispose()
         {
             GC.SuppressFinalize(this);
             if (open)
                 ImComponents.RadialMenu.Instance.EndRadialMenu();
         }
-        // Optional Helpers
         public bool RadialMenuItem(string name)
         {
             return ImComponents.RadialMenu.Instance.RadialMenuItem(name);
@@ -29,10 +34,13 @@ namespace ImComponents.Raii
         }
     }
 
-    public class SubMenu(string name) : IDisposable, IMenu
+    public class SubMenu : IDisposable, IMenu
     {
-        public bool open = ImComponents.RadialMenu.Instance.BeginRadialMenu(name);
-
+        public bool open;
+        public SubMenu(string name)
+        {
+            open = ImComponents.RadialMenu.Instance.BeginRadialMenu(name);
+        }
         public void Dispose()
         {
             GC.SuppressFinalize(this);
