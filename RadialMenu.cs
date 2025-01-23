@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Numerics;
 using ImGuiNET;
-using Microsoft.VisualBasic;
 using MZCommon;
 
 namespace ImComponents;
@@ -41,7 +41,7 @@ public sealed class RadialMenu
         public Elem TS;
         public List<Elem> Items;
     }
-    public bool BeginRadialPopup(string name, bool open)
+    public bool BeginRadialPopup(bool open)
     {
         if (open)
         {
@@ -61,7 +61,7 @@ public sealed class RadialMenu
             TS = new()
             {
                 IsSubMenu = true,
-                Name = name,
+                Name = "_ROOT",
             },
             Rotation = Rotation,
             IdxHovered = -1,
