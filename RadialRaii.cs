@@ -2,12 +2,19 @@ using System;
 
 namespace ImComponents.Raii
 {
-    public class RadialMenu(bool open) : IDisposable
+
+    //Eventually gonna re-wire everything to this class.... it'll be fun
+    public interface IMenu {
+        SubMenu Menu(string name);
+        bool RadialMenuItem(string name);
+    }
+    public class RadialMenu(bool open) : IDisposable, IMenu
     {
         public bool open = ImComponents.RadialMenu.Instance.BeginRadialPopup(open);
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             if (open)
                 ImComponents.RadialMenu.Instance.EndRadialMenu();
         }
@@ -22,12 +29,13 @@ namespace ImComponents.Raii
         }
     }
 
-    public class SubMenu(string name) : IDisposable
+    public class SubMenu(string name) : IDisposable, IMenu
     {
         public bool open = ImComponents.RadialMenu.Instance.BeginRadialMenu(name);
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             if (open)
             {
                 ImComponents.RadialMenu.Instance.EndRadialMenu();
