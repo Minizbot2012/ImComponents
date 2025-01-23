@@ -2,35 +2,37 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using ImGuiNET;
+using Microsoft.VisualBasic;
 using MZCommon;
 
 namespace ImComponents;
 
-public sealed class AdvRadialMenu
+public sealed class RadialMenu
 {
-    private AdvRadialMenu()
+    private RadialMenu()
     {
     }
-    public static AdvRadialMenu Instance => Singleton<AdvRadialMenu>.Instance;
+    public static RadialMenu Instance => Singleton<RadialMenu>.Instance;
     private static readonly float IM_PI = 3.14159265358979323846f;
     private static readonly int MIN_ITEMS = 3;
     private static readonly int MIN_ITEMS_PER_LEVEL = 3;
-    private struct RootState
+    private struct RadialState
     {
-        public Vector2 Center;
-        public Stack<State> Items;
-        public Stack<int> Hovered;
-        public Stack<float> Rotations;
-        public int last;
-        public bool Open;
+        public Vector2 center;
+        public Stack<Layer> items;
+        public Stack<int> hovered;
+        public Stack<float> rotations;
+        public int lastFrame;
+        public bool open;
+        public bool wasOpen;
     }
-    private RootState Root = new();
+    private RadialState Root = new();
     private struct Elem
     {
         public bool IsSubMenu;
         public string Name;
     }
-    private struct State
+    private struct Layer
     {
         public float RADIUS_MIN;
         public float RADIUS_MAX;
@@ -43,18 +45,18 @@ public sealed class AdvRadialMenu
     {
         if (open)
         {
-            if (ImGui.GetFrameCount() > Root.last + 1)
+            if (ImGui.GetFrameCount() > Root.lastFrame + 1)
             {
-                Root.Center = ImGui.GetIO().MousePos;
-                Root.Hovered = new();
-                Root.Items = new();
-                Root.Rotations = new();
+                Root.center = ImGui.GetIO().MousePos;
+                Root.hovered = [];
+                Root.items = [];
+                Root.rotations = [];
             }
-            Root.last = ImGui.GetFrameCount();
+            Root.lastFrame = ImGui.GetFrameCount();
         }
-        Root.Open = open;
         var Rotation = -IM_PI / 2.0f;
-        State st = new()
+        Root.open = open;
+        Layer st = new()
         {
             TS = new()
             {
@@ -63,38 +65,34 @@ public sealed class AdvRadialMenu
             },
             Rotation = Rotation,
             IdxHovered = -1,
-            Items = new(),
+            Items = [],
             RADIUS_MAX = 120.0f,
             RADIUS_MIN = 30.0f,
         };
-        ImGui.SetNextWindowBgAlpha(0f);
-        var opened = ImGui.BeginPopup(st.TS.Name);
-        if (opened)
+        if (Root.open | Root.wasOpen)
         {
-            var list = ImGui.GetWindowDrawList();
-            list.PushClipRectFullScreen();
-            if (Root.Hovered.Count > 0)
+            if (Root.hovered.Count > 0)
             {
-                st.IdxHovered = Root.Hovered.Pop();
+                st.IdxHovered = Root.hovered.Pop();
             }
-            Root.Items.Push(st);
+            Root.items.Push(st);
         }
-        return opened;
+        return Root.open | Root.wasOpen;
     }
     public bool BeginRadialMenu(string name)
     {
-        if (Root.Items.Count > 0)
+        if (Root.items.Count > 0)
         {
-            var pctx = Root.Items.Peek();
+            var pctx = Root.items.Peek();
             Elem ThisItem = new()
             {
                 IsSubMenu = true,
                 Name = name,
             };
-            State st = new()
+            Layer st = new()
             {
                 TS = ThisItem,
-                Items = new(),
+                Items = [],
                 Rotation = pctx.Rotation,
                 IdxHovered = -1,
                 RADIUS_MIN = pctx.RADIUS_MAX,
@@ -103,15 +101,15 @@ public sealed class AdvRadialMenu
             pctx.Items.Add(ThisItem);
             if ((pctx.Items.Count - 1) == pctx.IdxHovered)
             {
-                if (Root.Hovered.Count > 0)
+                if (Root.hovered.Count > 0)
                 {
-                    st.IdxHovered = Root.Hovered.Pop();
+                    st.IdxHovered = Root.hovered.Pop();
                 }
-                if (Root.Rotations.Count > 0)
+                if (Root.rotations.Count > 0)
                 {
-                    st.Rotation = Root.Rotations.Pop();
+                    st.Rotation = Root.rotations.Pop();
                 }
-                Root.Items.Push(st);
+                Root.items.Push(st);
                 return true;
             }
         }
@@ -119,9 +117,9 @@ public sealed class AdvRadialMenu
     }
     public bool RadialMenuItem(string name)
     {
-        if (Root.Items.Count > 0)
+        if (Root.items.Count > 0)
         {
-            var pctx = Root.Items.Peek();
+            var pctx = Root.items.Peek();
             pctx.Items.Add(new Elem()
             {
                 Name = name,
@@ -129,11 +127,11 @@ public sealed class AdvRadialMenu
             });
             if ((pctx.Items.Count - 1) == pctx.IdxHovered)
             {
-                if (Root.Hovered.Count > 0)
+                if (Root.hovered.Count > 0)
                 {
-                    Root.Hovered.Pop();
+                    Root.hovered.Pop();
                 }
-                if (!Root.Open)
+                if (!Root.open && Root.wasOpen)
                 {
                     return true;
                 }
@@ -147,11 +145,11 @@ public sealed class AdvRadialMenu
     }
     public void EndRadialMenu()
     {
-        var ctx = Root.Items.Pop();
+        var ctx = Root.items.Pop();
         var style = ImGui.GetStyle();
-        var list = ImGui.GetWindowDrawList();
-        var item_arc_span = 2.0f * IM_PI / Math.Max(ctx.Items.Count, MIN_ITEMS + MIN_ITEMS_PER_LEVEL * (Root.Items.Count + 1));
-        var delta = new Vector2(ImGui.GetIO().MousePos.X - Root.Center.X, ImGui.GetIO().MousePos.Y - Root.Center.Y);
+        var list = ImGui.GetBackgroundDrawList();
+        var item_arc_span = 2.0f * IM_PI / Math.Max(ctx.Items.Count, MIN_ITEMS + MIN_ITEMS_PER_LEVEL * (Root.items.Count + 1));
+        var delta = new Vector2(ImGui.GetIO().MousePos.X - Root.center.X, ImGui.GetIO().MousePos.Y - Root.center.Y);
         var drag_angle = (float)Math.Atan2(delta.Y, delta.X);
         var drag_dist = Math.Sqrt(delta.X * delta.X + delta.Y * delta.Y);
         ctx.Rotation -= item_arc_span * (ctx.Items.Count - 1f) / 2f;
@@ -180,8 +178,8 @@ public sealed class AdvRadialMenu
             }
             int arc_segemnts = (int)(32 * item_arc_span / (2 * IM_PI)) + 1;
             uint color = ImGui.GetColorU32(ctx.IdxHovered == item ? (ctx.Items[ctx.IdxHovered].IsSubMenu ? ImGuiCol.ButtonHovered : ImGuiCol.ButtonActive) : ImGuiCol.Button);
-            list.PathArcTo(Root.Center, ctx.RADIUS_MAX - style.ItemInnerSpacing.X, item_outer_ang_min, item_outer_ang_max, arc_segemnts);
-            list.PathArcTo(Root.Center, ctx.RADIUS_MIN + style.ItemInnerSpacing.X, item_inner_ang_max, item_inner_ang_min, arc_segemnts);
+            list.PathArcTo(Root.center, ctx.RADIUS_MAX - style.ItemInnerSpacing.X, item_outer_ang_min, item_outer_ang_max, arc_segemnts);
+            list.PathArcTo(Root.center, ctx.RADIUS_MIN + style.ItemInnerSpacing.X, item_inner_ang_max, item_inner_ang_min, arc_segemnts);
             list.PathFillConvex(color);
             float RadCenter = (item_arc_span * item) + ctx.Rotation;
             if (ctx.Items[item].IsSubMenu)
@@ -193,44 +191,38 @@ public sealed class AdvRadialMenu
 
                 tri[0] = new()
                 {
-                    X = Root.Center.X + (float)Math.Cos(RadCenter) * (ctx.RADIUS_MAX - 5.0f),
-                    Y = Root.Center.Y + (float)Math.Sin(RadCenter) * (ctx.RADIUS_MAX - 5.0f)
+                    X = Root.center.X + (float)Math.Cos(RadCenter) * (ctx.RADIUS_MAX - 5.0f),
+                    Y = Root.center.Y + (float)Math.Sin(RadCenter) * (ctx.RADIUS_MAX - 5.0f)
                 };
                 tri[1] = new()
                 {
-                    X = Root.Center.X + (float)Math.Cos(RadLeft) * (ctx.RADIUS_MAX - 10.0f),
-                    Y = Root.Center.Y + (float)Math.Sin(RadLeft) * (ctx.RADIUS_MAX - 10.0f)
+                    X = Root.center.X + (float)Math.Cos(RadLeft) * (ctx.RADIUS_MAX - 10.0f),
+                    Y = Root.center.Y + (float)Math.Sin(RadLeft) * (ctx.RADIUS_MAX - 10.0f)
                 };
                 tri[2] = new()
                 {
-                    X = Root.Center.X + (float)Math.Cos(RadRight) * (ctx.RADIUS_MAX - 10.0f),
-                    Y = Root.Center.Y + (float)Math.Sin(RadRight) * (ctx.RADIUS_MAX - 10.0f)
+                    X = Root.center.X + (float)Math.Cos(RadRight) * (ctx.RADIUS_MAX - 10.0f),
+                    Y = Root.center.Y + (float)Math.Sin(RadRight) * (ctx.RADIUS_MAX - 10.0f)
                 };
 
                 list.AddTriangleFilled(tri[0], tri[1], tri[2], ImGui.GetColorU32(new Vector4(1f)));
             }
             Vector2 text_size = ImGui.CalcTextSize(ilabel, 0.0f);
             Vector2 text_pos = new(
-                Root.Center.X + (float)Math.Cos((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.X * 0.5f,
-                Root.Center.Y + (float)Math.Sin((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.Y * 0.5f
+                Root.center.X + (float)Math.Cos((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.X * 0.5f,
+                Root.center.Y + (float)Math.Sin((item_inner_ang_min + item_inner_ang_max) * 0.5f) * (ctx.RADIUS_MIN + ctx.RADIUS_MAX) * 0.5f - text_size.Y * 0.5f
             );
             list.AddText(text_pos, ImGui.GetColorU32(ImGuiCol.Text), ilabel);
         }
-        if (Root.Items.Count == 0)
-        {
-            list.PopClipRect();
-            ImGui.EndPopup();
-            if (!Root.Open)
-            {
-                ImGui.CloseCurrentPopup();
-            }
+        if(Root.items.Count == 0) {
+            Root.wasOpen = Root.open;
         }
         if (ctx.IdxHovered != -1)
         {
-            Root.Hovered.Push(ctx.IdxHovered);
+            Root.hovered.Push(ctx.IdxHovered);
             if (ctx.Items[ctx.IdxHovered].IsSubMenu)
             {
-                Root.Rotations.Push(item_arc_span * ctx.IdxHovered + ctx.Rotation);
+                Root.rotations.Push(item_arc_span * ctx.IdxHovered + ctx.Rotation);
             }
         }
     }
